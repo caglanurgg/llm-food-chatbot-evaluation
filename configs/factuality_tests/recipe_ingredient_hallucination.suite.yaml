@@ -1,0 +1,7 @@
+name: "Karniyarık"
+type: "factuality_test"
+input: "Karniyarık yemeğinin tarihi ve içeriği hakkında doğru bilgi ver."
+expected:
+  - factual: true
+  - contains: "patlıcan"
+  - contains: "kıyma"

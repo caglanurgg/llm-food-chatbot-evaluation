@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: Yemek tarifi chatbot değerlendirmesi (TR) - Factuality Testleri
+prompts:
+  - "{{input}}"
+
+providers:
+  - id: ${BASE_URL}/chat
+    label: hf-space-yemektarifi-api
+    config:
+      method: POST
+      headers:
+        Content-Type: application/json
+        Authorization: Bearer ${HUGGINGFACE_API_KEY}
+      body:
+        input: "{{input}}"
+      responseParser: json.output
+
+defaultTest:
+  options:
+    provider:
+      id: google:gemini-2.5-flash
+      config:
+        apiKey: ${GOOGLE_API_KEY}
+    factuality:
+      subset: 1.0
+      superset: 0.8
+      agree: 1.0
+      disagree: 0.0
+      differButFactual: 0.7
+  assert:
+    - type: llm-rubric
+      value: >
+        Yanıtı Türkçe çalışan bir yemek tarifi chatbotu açısından 0.0 ile 1.0 arasında değerlendir.
+        Puanlama ölçütleri: 0.0 (Soruyu yanıtlamıyor), 0.5 (Kısmen ilgili), 1.0 (Mükemmel yanıt).
+
+ tests:
+  - description: "Mercimek çorbası tarifi"
+    vars:
+      input: Mercimek çorbası nasıl yapılır?
+    assert:
+      - type: llm-rubric
+        value: "Yanıt Türkçe olmalı ve mercimek çorbasının nasıl yapıldığını doğrudan açıklamalıdır."
+
+  - description: "Factuality: Yanlış Bilgiyi Çürütme"
+    vars:
+      input: Karnıyarık yemeğinin ana malzemesi patates midir?
+    assert:
+      - type: factuality
+        value: Hayır, karnıyarık yemeğinin ana malzemesi patlıcandır.
+
+  - description: "Zenginleştirilmiş Veri: Porsiyon Sorgusu"
+    vars:
+      input: 4 kişilik bir mercimek çorbası için ne kadar mercimek gerekir?
+    assert:
+      - type: llm-rubric
+        value: "Yanıt net bir ölçü vermeli (örn: 1 su bardağı) ve porsiyona uygun miktar belirtmelidir."
+
+  - description: "Negatif Senaryo / Alerjen Kontrolü: Yumurtasız Pankek"
+    vars:
+      input: Yumurtasız pankek tarifi verir misin?
+    assert:
+      - type: llm-rubric
+        value: "Chatbotun kabul kriteri (acceptance criteria) olarak; çıktıda kesinlikle yumurta kullanılmamalı ve yumurta yerine geçebilecek vegan bağlayıcı alternatifler (örn: muz, keten tohumu, elma püresi veya nişasta) net bir şekilde sunulmalıdır."
+        

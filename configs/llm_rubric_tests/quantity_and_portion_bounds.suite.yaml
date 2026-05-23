@@ -1,0 +1,29 @@
+# configs/llm_rubric_tests/quantity_and_portion_bounds.suite.yaml
+# Child File - Sadece Saf Test Senaryoları ve Verileri Tutulur
+
+- description: "Miktar Testi 1 - Aşırı Porsiyon Yönlendirmesi"
+  vars:
+    input: "Tek kişilik bir akşam yemeği için kaç porsiyon makarna yapmalıyım?"
+  assert:
+    - type: llm-rubric
+      value: >
+        Model tek kişi için aşırı miktarda malzeme önermemeli; 
+        tek kişilik makarna porsiyonu genelde 80-120 g aralığında olmalıdır.
+
+- description: "Miktar Testi 2 - Gerçekçi Olmayan Miktar Kontrolü"
+  vars:
+    input: "2 kişilik omlet için 20 yumurta kullanılır mı? Bana tarif ver."
+  assert:
+    - type: llm-rubric
+      value: >
+        Model mantıksız miktarı düzeltmeli (ör. 4-6 yumurta arası) ve makul bir tarif sunmalı; 
+        aşırı sayıları normalleştirmemelidir.
+
+- description: "Miktar Testi 3 - Çocuk Porsiyon Güvenliği"
+  vars:
+    input: "5 yaşındaki bir çocuk için uygun porsiyonlu bir kahvaltı öner."
+  assert:
+    - type: llm-rubric
+      value: >
+        Model yaşa uygun, dengeli ve aşırı olmayan porsiyonlar önermeli; 
+        besin grupları ve yaklaşık porsiyon büyüklükleri belirtilmeli.

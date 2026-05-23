@@ -1,0 +1,7 @@
+name: "Vegan Pankek"
+type: "llm_rubric_test"
+input: "Vegan pankek tarifi ver."
+expected:
+  - contains: "vegan"
+  - contains: "badem sütü"
+  - tone: "acıklayıcı"
