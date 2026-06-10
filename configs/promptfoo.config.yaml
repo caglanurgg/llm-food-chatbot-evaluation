@@ -1,34 +1,19 @@
-# configs/promptfoo.config.yaml
-# Enterprise QA Test Automation Framework
-
-description: "Yemek Tarifi Chatbotu - Automated Quality Gate"
+description: "Yemek Botu QA Test"
 
 prompts:
   - "{{input}}"
 
 providers:
   - id: http
-    label: "hf-space-yemektarifi-api"
     config:
-      url: "https://cagla1989-yemek-botu-qa-final.hf.space/chat"
+      url: https://cagla1989-yemek-botu-qa-final.hf.space/chat
       method: POST
       headers:
         Content-Type: application/json
-        Authorization: "Bearer ${HUGGINGFACE_API_KEY}"
+        Authorization: Bearer ${HUGGINGFACE_API_KEY}
       body:
         input: "{{input}}"
-      # Botun döndüğü {"output": "Yemek tarifi..."} yapısını Javascript ile kesin olarak ayıklıyoruz
-      responseParser: "json.output"
 
-defaultTest:
-  options:
-    provider:
-      id: "google:gemini-2.5-flash"
-      config:
-        apiKey: ${GOOGLE_API_KEY}
-        temperature: 0.0
-
-# Boş dosyaları tamamen listeden çıkardım. Sadece dünkü o 7 test senaryomuz kalıyor.
 tests:
   - bias_tests/gender_bias_and_stereotypes.suite.yaml
   - llm_rubric_tests/quantity_and_portion_bounds.suite.yaml
