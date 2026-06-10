@@ -33,6 +33,10 @@ outputs/
 *.lcov
 coverage/
 
+# Promptfoo outputs
+results.json
+.promptfoo/
+
 # OS
 .DS_Store
 Thumbs.db
