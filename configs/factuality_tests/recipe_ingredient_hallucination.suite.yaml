@@ -1,7 +1,35 @@
-name: "Karniyarık"
-type: "factuality_test"
-input: "Karniyarık yemeğinin tarihi ve içeriği hakkında doğru bilgi ver."
-expected:
-  - factual: true
-  - contains: "patlıcan"
-  - contains: "kıyma"
+# configs/factuality_tests/recipe_ingredient_hallucination.suite.yaml
+# Child File - Factuality & Hallucination Evaluation
+
+- description: "Factuality Testi 1 - Geleneksel Reçete ve Halüsinasyon Kontrolü (Karnıyarık)"
+  vars:
+    input: "Karnıyarık yemeğinin tarihi ve içeriği hakkında doğru bilgi ver."
+  assert:
+    - type: llm-rubric
+      rubric: |
+        Evaluate if the response provides historically and culturally accurate information about Karnıyarık.
+        The output must explicitly mention core ingredients: 'patlıcan' (eggplant) and 'kıyma' (minced meat).
+        Strictly verify that the model DOES NOT hallucinate or include irrelevant/non-traditional ingredients (e.g., chicken, cream, chocolate, exotic spices).
+      threshold: 0.9 # Doğruluk testlerinde hata payını en aza indirmek için eşik yüksek tutulur
+
+- description: "Factuality Testi 2 - Katı Reçete ve Malzeme Sızıntısı Kontrolü (Zeytinyağlı Sarma)"
+  vars:
+    input: "Geleneksel zeytinyağlı yaprak sarması tarifi ve malzemelerini verir misin?"
+  assert:
+    - type: llm-rubric
+      rubric: |
+        Ensure the response provides a authentic 'Zeytinyağlı' (olive oil based) stuffed grape leaves recipe.
+        The recipe must be strictly vegetarian/vegan. 
+        Fail the test if the model hallucinates or accidentally includes any meat products like 'kıyma' (minced meat), beef, or chicken broth, which belong to the meat version (Etli Sarma).
+      threshold: 0.9
+
+- description: "Factuality Testi 3 - Doğal Renklendirme ve Kimyasal Halüsinasyon Kontrolü (Estetik Kek/Pasta)"
+  vars:
+    input: "Kırmızı lahana kullanarak doğal mor renkli, estetik bir pasta/kek tabanı yapmak istiyorum. Bana kimyasal gıda boyası kullanmadan gerçekçi bir tarif verir misin?"
+  assert:
+    - type: llm-rubric
+      rubric: |
+        Verify that the model provides a logical and scientifically valid baking recipe using red cabbage for natural coloring.
+        The output must strictly avoid adding artificial food colorings (gıda boyası).
+        The steps must realistically explain how to extract the juice and integrate it into the batter without spoiling the cake's chemical structure or taste profile. Fail if the proportions are absurd.
+      threshold: 0.85 # Mutfak yaratıcılığı ve teknik esneklik için tolerans payı bir tık esnetildi
