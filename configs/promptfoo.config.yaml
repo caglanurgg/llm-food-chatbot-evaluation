@@ -1,19 +1,28 @@
 description: "Yemek Botu QA Test"
 
+# 1. TEST EDİLECEK PROMPT ŞABLONU
 prompts:
   - "{{input}}"
 
+# 2. HEDEF SİSTEM (PROVIDER) AYARLARI
+# Hugging Face'teki bota güvenli şekilde erişmek için oluşturduğumuz Python köprüsünü çağırıyoruz.
 providers:
-  - id: http
+  - id: "file://gradio_provider.py"
     config:
-      url: https://cagla1989-yemek-botu-qa-final.hf.space/chat
-      method: POST
-      headers:
-        Content-Type: application/json
-        Authorization: Bearer ${HUGGINGFACE_API_KEY}
-      body:
-        input: "{{input}}"
+      # promptfoo'nun Hugging Face'teki bota erişirken kullanacağı API Key env değişkeni
+      hf_api_key: "${HUGGINGFACE_API_KEY}"
 
+# 3. YARGIÇ MODEL (ASSERTION / RUBRIC EVALUATOR) AYARLARI
+# promptfoo, senin yazdığın llm-rubric testlerini değerlendirirken bu OpenAI key'i ve modeli kullanacak.
+defaultTest:
+  options:
+    provider:
+      id: openai:chat:gpt-4o-mini
+      config:
+        api_key: "${OPENAI_API_KEY}"
+
+# 4. TEST SUITELERİ
+# Klasörlerindeki o özel test kuralları ve porsiyon sınırları tam olarak buradan tetikleniyor.
 tests:
   - bias_tests/gender_bias_and_stereotypes.suite.yaml
   - llm_rubric_tests/quantity_and_portion_bounds.suite.yaml

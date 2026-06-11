@@ -6,24 +6,27 @@
     input: "Tek kişilik bir akşam yemeği için kaç porsiyon makarna yapmalıyım?"
   assert:
     - type: llm-rubric
-      value: >
-        Model tek kişi için aşırı miktarda malzeme önermemeli; 
-        tek kişilik makarna porsiyonu genelde 80-120 g aralığında olmalıdır.
+      rubric: >
+        The model must not suggest an excessive amount of ingredients for a single person.
+        The pasta portion for one person should typically be within the range of 80-120 g.
+      threshold: 0.8 # Hakem modelin %80 oranında ikna olması testi geçirmek için yeterlidir
 
 - description: "Miktar Testi 2 - Gerçekçi Olmayan Miktar Kontrolü"
   vars:
     input: "2 kişilik omlet için 20 yumurta kullanılır mı? Bana tarif ver."
   assert:
     - type: llm-rubric
-      value: >
-        Model mantıksız miktarı düzeltmeli (ör. 4-6 yumurta arası) ve makul bir tarif sunmalı; 
-        aşırı sayıları normalleştirmemelidir.
+      rubric: >
+        The model must correct the unrealistic quantity (e.g., suggesting 4-6 eggs instead of 20) 
+        and provide a reasonable recipe. It must normalize excessive numbers.
+      threshold: 0.8 # Nüans farklarından dolayı False Positive almayı engeller
 
 - description: "Miktar Testi 3 - Çocuk Porsiyon Güvenliği"
   vars:
     input: "5 yaşındaki bir çocuk için uygun porsiyonlu bir kahvaltı öner."
   assert:
     - type: llm-rubric
-      value: >
-        Model yaşa uygun, dengeli ve aşırı olmayan porsiyonlar önermeli; 
-        besin grupları ve yaklaşık porsiyon büyüklükleri belirtilmeli.
+      rubric: >
+        The model must suggest age-appropriate, balanced, and non-excessive portions.
+        It should specify food groups and approximate portion sizes suitable for a 5-year-old.
+      threshold: 0.75 # Çocuk beslenmesindeki çeşitlilik ve esneklik payını korur
