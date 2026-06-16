@@ -8,6 +8,15 @@ package-lock.json
 .env.local
 .env.*.local
 
+# Python cache (Added for a clean repository)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+
 # Build and distribution
 dist/
 build/
