@@ -1,5 +1,11 @@
 {
   "dependencies": {
     "promptfoo": "^0.121.11"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^11.1.0"
+  },
+  "scripts": {
+    "eval": "dotenv -e .env -- promptfoo eval -c configs/promptfoo.config.yaml"
   }
 }
