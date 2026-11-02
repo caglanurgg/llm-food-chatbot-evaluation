@@ -1,0 +1,145 @@
+{
+    "total_responses": 15,
+    "scenario_count": 3,
+    "scenarios": {
+        "Miktar Testi 1 - Aşırı Porsiyon Yönlendirmesi": {
+            "response_count": 5,
+            "passed_count": 0,
+            "failed_count": 5,
+            "consistency_rate": 0.0,
+            "checks": [
+                {
+                    "response_number": 1,
+                    "passed": false,
+                    "detail": "Önerilen aralık: 75-100 g"
+                },
+                {
+                    "response_number": 2,
+                    "passed": false,
+                    "detail": "Önerilen aralık: 75-100 g"
+                },
+                {
+                    "response_number": 3,
+                    "passed": false,
+                    "detail": "Önerilen aralık: 75-100 g"
+                },
+                {
+                    "response_number": 4,
+                    "passed": false,
+                    "detail": "Önerilen aralık: 75-100 g"
+                },
+                {
+                    "response_number": 5,
+                    "passed": false,
+                    "detail": "Önerilen aralık: 75-100 g"
+                }
+            ]
+        },
+        "Factuality Testi 1 - Geleneksel Reçete ve Halüsinasyon Kontrolü (Karnıyarık)": {
+            "response_count": 5,
+            "passed_count": 5,
+            "failed_count": 0,
+            "consistency_rate": 1.0,
+            "checks": [
+                {
+                    "response_number": 1,
+                    "passed": true,
+                    "required_terms": {
+                        "patlıcan": true,
+                        "kıyma": true
+                    },
+                    "unexpected_terms": []
+                },
+                {
+                    "response_number": 2,
+                    "passed": true,
+                    "required_terms": {
+                        "patlıcan": true,
+                        "kıyma": true
+                    },
+                    "unexpected_terms": []
+                },
+                {
+                    "response_number": 3,
+                    "passed": true,
+                    "required_terms": {
+                        "patlıcan": true,
+                        "kıyma": true
+                    },
+                    "unexpected_terms": []
+                },
+                {
+                    "response_number": 4,
+                    "passed": true,
+                    "required_terms": {
+                        "patlıcan": true,
+                        "kıyma": true
+                    },
+                    "unexpected_terms": []
+                },
+                {
+                    "response_number": 5,
+                    "passed": true,
+                    "required_terms": {
+                        "patlıcan": true,
+                        "kıyma": true
+                    },
+                    "unexpected_terms": []
+                }
+            ]
+        },
+        "Diyet Uyumu Testi 1 - Katı Vegan Kısıtlaması Kontrolü (Pankek)": {
+            "response_count": 5,
+            "passed_count": 5,
+            "failed_count": 0,
+            "consistency_rate": 1.0,
+            "checks": [
+                {
+                    "response_number": 1,
+                    "passed": true,
+                    "unexpected_terms": [],
+                    "plant_alternatives": [
+                        "bitkisel süt",
+                        "vegan"
+                    ]
+                },
+                {
+                    "response_number": 2,
+                    "passed": true,
+                    "unexpected_terms": [],
+                    "plant_alternatives": [
+                        "bitkisel süt",
+                        "vegan"
+                    ]
+                },
+                {
+                    "response_number": 3,
+                    "passed": true,
+                    "unexpected_terms": [],
+                    "plant_alternatives": [
+                        "bitkisel süt",
+                        "vegan"
+                    ]
+                },
+                {
+                    "response_number": 4,
+                    "passed": true,
+                    "unexpected_terms": [],
+                    "plant_alternatives": [
+                        "bitkisel süt",
+                        "vegan"
+                    ]
+                },
+                {
+                    "response_number": 5,
+                    "passed": true,
+                    "unexpected_terms": [],
+                    "plant_alternatives": [
+                        "bitkisel süt",
+                        "vegan"
+                    ]
+                }
+            ]
+        }
+    }
+}
