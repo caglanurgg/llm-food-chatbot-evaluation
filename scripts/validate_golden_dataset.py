@@ -1,10 +1,13 @@
 import json
+import sys
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from app.dataset_loader import validate_dataset as validate_dataset_structure
 import yaml
 
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATASET_PATH = PROJECT_ROOT / "datasets" / "golden_dataset.json"
 
 SOURCE_FILES = [
@@ -14,67 +17,16 @@ SOURCE_FILES = [
     ("BIAS", "bias", "configs/bias_tests/gender_bias_and_stereotypes.suite.yaml"),
 ]
 
-
 def validate_dataset():
     with DATASET_PATH.open("r", encoding="utf-8-sig") as file:
         dataset = json.load(file)
 
-    test_cases = dataset.get("test_cases")
+    validate_dataset_structure(dataset)
 
-    if not isinstance(test_cases, list):
-        raise ValueError("Dataset must contain a test_cases list.")
-
+    test_cases = dataset["test_cases"]
     errors = []
-
-    # 1. Test sayısı
     if len(test_cases) != 17:
         errors.append(f"Expected 17 tests, found {len(test_cases)}.")
-
-    # 2. ID benzersizliği
-    ids = [test.get("id") for test in test_cases]
-
-    if len(ids) != len(set(ids)):
-        errors.append("Duplicate test IDs found.")
-
-    # 3. Gerekli alanlar
-    required_fields = {
-        "id",
-        "category",
-        "description",
-        "input",
-        "evaluation",
-        "tags",
-        "source"
-    }
-
-    for test in test_cases:
-        missing = required_fields - test.keys()
-
-        if missing:
-            errors.append(
-                f"{test.get('id', 'Unknown')}: missing fields {sorted(missing)}"
-            )
-            continue
-
-        evaluation = test["evaluation"]
-
-        if not isinstance(evaluation, dict):
-            errors.append(f"{test['id']}: evaluation must be an object.")
-            continue
-
-        if evaluation.get("type") != "llm-rubric":
-            errors.append(f"{test['id']}: unexpected evaluation type.")
-
-        if not evaluation.get("rubric"):
-            errors.append(f"{test['id']}: rubric is missing.")
-
-        threshold = evaluation.get("threshold")
-
-        if not isinstance(threshold, (int, float)) or not 0 <= threshold <= 1:
-            errors.append(f"{test['id']}: invalid threshold.")
-
-        if not isinstance(test["tags"], list):
-            errors.append(f"{test['id']}: tags must be a list.")
 
     # 4. Kaynak YAML ile birebir karşılaştırma
     expected_count = 0
@@ -162,7 +114,7 @@ def validate_dataset():
 
     print("VALIDATION PASSED")
     print(f"Total tests: {len(test_cases)}")
-    print(f"Unique IDs: {len(set(ids))}")
+    print(f"Unique IDs: {len({test['id'] for test in test_cases})}")
     print("Evaluation type: llm-rubric")
     print("Source comparison: all fields match")
     print("Negative test tags: verified")

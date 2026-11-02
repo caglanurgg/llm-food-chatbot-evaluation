@@ -1,18 +1,20 @@
-import json
-from gradio_client import Client
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from app.chatbot_client import send_message
+
 
 def call_api(prompt, options, context):
     try:
-        # Doğrudan senin API dökümantasyonundaki resmi kontratı çalıştırıyoruz
-        client = Client("cagla1989/Yemek_Botu_QA_Final")
-        result = client.predict(
-            user_input=prompt,
-            api_name="/yemek_botu"
-        )
-        # Promptfoo'nun anlayacağı ham metin formatında cevabı dönüyoruz
+        result = send_message(prompt)
+
         return {
             "output": result
         }
+
     except Exception as e:
         return {
             "error": f"Gradio Client hatasi: {str(e)}"
