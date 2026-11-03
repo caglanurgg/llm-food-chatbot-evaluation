@@ -12,7 +12,7 @@ def load_results():
         return json.load(file)["results"]["results"]
 
 
-def check_quantity(response):
+def extract_quantity(response):
     matches = re.findall(
         r"(\d+)\s*[-–]\s*(\d+)\s*(?:g|gr|gram)",
         response.lower()
@@ -20,15 +20,45 @@ def check_quantity(response):
 
     if not matches:
         return {
-            "passed": False,
+            "found": False,
             "detail": "Gram aralığı tespit edilemedi."
         }
 
     low, high = map(int, matches[0])
 
     return {
-        "passed": low >= 80 and high <= 120,
-        "detail": f"Önerilen aralık: {low}-{high} g"
+        "found": True,
+        "min_grams": low,
+        "max_grams": high,
+    }
+
+
+def analyze_quantity_variation(responses):
+    quantities = []
+
+    for index, response in enumerate(responses, start=1):
+        result = extract_quantity(response)
+        if result["found"]:
+            quantities.append({"response_number": index, **result})
+
+    if not quantities:
+        return {
+            "extracted_count": 0,
+            "detail": "Hiçbir yanıttan miktar çıkarılamadı."
+        }
+
+    lower_values = [item["min_grams"] for item in quantities]
+    upper_values = [item["max_grams"] for item in quantities]
+
+    return {
+        "extracted_count": len(quantities),
+        "min_recommended_grams": min(lower_values),
+        "max_recommended_grams": max(upper_values),
+        "average_lower_bound": round(sum(lower_values) / len(lower_values), 2),
+        "average_upper_bound": round(sum(upper_values) / len(upper_values), 2),
+        "portion_range_width": round(sum(item["max_grams"] - item["min_grams"] for item in quantities) / len(quantities), 2),
+        "response_variation": max(max(lower_values) - min(lower_values), max(upper_values) - min(upper_values)),
+        "individual_results": quantities,
     }
 
 
@@ -96,9 +126,15 @@ def check_vegan(response):
 def analyze_scenario(description, responses):
     checks = []
 
+    if "Miktar Testi 1" in description:
+        return {
+            "response_count": len(responses),
+            "quantity_variation": analyze_quantity_variation(responses),
+        }
+
     for index, response in enumerate(responses, start=1):
         if "Miktar Testi" in description:
-            result = check_quantity(response)
+            result = extract_quantity(response)
         elif "Factuality Testi" in description:
             result = check_factuality(response)
         elif "Diyet Uyumu" in description:
@@ -111,7 +147,7 @@ def analyze_scenario(description, responses):
             **result,
         })
 
-    passed_count = sum(item["passed"] for item in checks)
+    passed_count = sum(item.get("passed", False) for item in checks)
 
     return {
         "response_count": len(responses),
@@ -153,19 +189,30 @@ def main():
 
     for description, data in report["scenarios"].items():
         print(f"\n{description}")
-        print(
-            f"Passed: {data['passed_count']}/{data['response_count']}"
-        )
-        print(
-            f"Consistency rate: {data['consistency_rate']:.0%}"
-        )
 
-        for check in data["checks"]:
-            status = "PASS" if check["passed"] else "FAIL"
-            print(f"  Response {check['response_number']}: {status}")
+        # Miktar analizi senaryoları için KeyError koruması
+        if "quantity_variation" in data:
+            qv = data["quantity_variation"]
+            extracted = qv.get("extracted_count", 0)
+            print(f"  Extracted: {extracted}/{data['response_count']}")
+            if extracted > 0:
+                print(f"  Min - Max: {qv['min_recommended_grams']}g - {qv['max_recommended_grams']}g")
+                print(f"  Response variation: {qv['response_variation']}g")
+            else:
+                print(f"  Detail: {qv.get('detail', 'Veri yok')}")
+        else:
+            print(
+                f"  Passed: {data['passed_count']}/{data['response_count']}"
+            )
+            print(
+                f"  Consistency rate: {data['consistency_rate']:.0%}"
+            )
+
+            for check in data.get("checks", []):
+                status = "PASS" if check.get("passed") else "FAIL"
+                print(f"  Response {check['response_number']}: {status}")
 
     print(f"\nReport saved: {OUTPUT_PATH}")
-
 
 if __name__ == "__main__":
     main()

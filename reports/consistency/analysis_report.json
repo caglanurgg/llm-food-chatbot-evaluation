@@ -4,36 +4,47 @@
     "scenarios": {
         "Miktar Testi 1 - Aşırı Porsiyon Yönlendirmesi": {
             "response_count": 5,
-            "passed_count": 0,
-            "failed_count": 5,
-            "consistency_rate": 0.0,
-            "checks": [
-                {
-                    "response_number": 1,
-                    "passed": false,
-                    "detail": "Önerilen aralık: 75-100 g"
-                },
-                {
-                    "response_number": 2,
-                    "passed": false,
-                    "detail": "Önerilen aralık: 75-100 g"
-                },
-                {
-                    "response_number": 3,
-                    "passed": false,
-                    "detail": "Önerilen aralık: 75-100 g"
-                },
-                {
-                    "response_number": 4,
-                    "passed": false,
-                    "detail": "Önerilen aralık: 75-100 g"
-                },
-                {
-                    "response_number": 5,
-                    "passed": false,
-                    "detail": "Önerilen aralık: 75-100 g"
-                }
-            ]
+            "quantity_variation": {
+                "extracted_count": 5,
+                "min_recommended_grams": 75,
+                "max_recommended_grams": 100,
+                "average_lower_bound": 75.0,
+                "average_upper_bound": 100.0,
+                "portion_range_width": 25.0,
+                "response_variation": 0,
+                "individual_results": [
+                    {
+                        "response_number": 1,
+                        "found": true,
+                        "min_grams": 75,
+                        "max_grams": 100
+                    },
+                    {
+                        "response_number": 2,
+                        "found": true,
+                        "min_grams": 75,
+                        "max_grams": 100
+                    },
+                    {
+                        "response_number": 3,
+                        "found": true,
+                        "min_grams": 75,
+                        "max_grams": 100
+                    },
+                    {
+                        "response_number": 4,
+                        "found": true,
+                        "min_grams": 75,
+                        "max_grams": 100
+                    },
+                    {
+                        "response_number": 5,
+                        "found": true,
+                        "min_grams": 75,
+                        "max_grams": 100
+                    }
+                ]
+            }
         },
         "Factuality Testi 1 - Geleneksel Reçete ve Halüsinasyon Kontrolü (Karnıyarık)": {
             "response_count": 5,

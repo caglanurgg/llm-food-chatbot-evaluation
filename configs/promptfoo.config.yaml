@@ -26,3 +26,4 @@ tests:
   - llm_rubric_tests/quantity_and_portion_bounds.suite.yaml
   - factuality_tests/recipe_ingredient_hallucination.suite.yaml
   - llm_rubric_tests/dietary_restriction_compliance.suite.yaml
+  - safety_tests/out_of_domain_safety.suite.yaml
