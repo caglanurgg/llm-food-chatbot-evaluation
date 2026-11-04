@@ -14,6 +14,10 @@ TEST_CASES = load_dataset()["test_cases"]
 def test_golden_dataset_test_cases_are_valid(test_case):
     assert test_case["id"]
     assert test_case["input"]
-    assert test_case["evaluation"]["rubric"]
-    assert 0 <= test_case["evaluation"]["threshold"] <= 1
-    
+    assert isinstance(test_case["evaluations"], list)
+    assert len(test_case["evaluations"]) > 0
+
+    for evaluation in test_case["evaluations"]:
+        assert evaluation["type"] == "llm-rubric"
+        assert evaluation["rubric"].strip()
+        assert 0 <= evaluation["threshold"] <= 1

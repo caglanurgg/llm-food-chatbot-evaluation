@@ -42,7 +42,7 @@ def validate_dataset(dataset: dict) -> None:
         "category",
         "description",
         "input",
-        "evaluation",
+        "evaluations",
         "tags",
         "source"
     }
@@ -71,16 +71,19 @@ def validate_dataset(dataset: dict) -> None:
         seen_ids.add(test_id)
 
         for field in ("category", "description", "input", "source"):
-            if not isinstance(test_case[field], str) or not test_case[field].strip():
+            if (
+                not isinstance(test_case[field], str)
+                or not test_case[field].strip()
+            ):
                 raise ValueError(
                     f"{field} must be a non-empty string in {test_id}."
                 )
 
-        evaluation = test_case["evaluation"]
+        evaluations = test_case["evaluations"]
 
-        if not isinstance(evaluation, dict):
+        if not isinstance(evaluations, list) or not evaluations:
             raise ValueError(
-                f"Evaluation must be an object in {test_id}."
+                f"Evaluations must be a non-empty list in {test_id}."
             )
 
         required_evaluation_fields = {
@@ -89,40 +92,53 @@ def validate_dataset(dataset: dict) -> None:
             "threshold"
         }
 
-        missing_evaluation_fields = (
-            required_evaluation_fields - evaluation.keys()
-        )
+        for index, evaluation in enumerate(evaluations, start=1):
+            if not isinstance(evaluation, dict):
+                raise ValueError(
+                    f"Each evaluation must be an object in {test_id}."
+                )
 
-        if missing_evaluation_fields:
-            raise ValueError(
-                f"Evaluation is missing fields in {test_id}: "
-                f"{sorted(missing_evaluation_fields)}"
+            missing_evaluation_fields = (
+                required_evaluation_fields - evaluation.keys()
             )
 
-        if evaluation["type"] not in ALLOWED_EVALUATION_TYPES:
-            raise ValueError(
-                f"Invalid evaluation type in {test_id}."
-            )
+            if missing_evaluation_fields:
+                raise ValueError(
+                    f"Evaluation {index} is missing fields in {test_id}: "
+                    f"{sorted(missing_evaluation_fields)}"
+                )
 
-        if not isinstance(evaluation["rubric"], str) or not evaluation["rubric"].strip():
-            raise ValueError(
-                f"Rubric must be a non-empty string in {test_id}."
-            )
+            if evaluation["type"] not in ALLOWED_EVALUATION_TYPES:
+                raise ValueError(
+                    f"Invalid evaluation type in {test_id}."
+                )
 
-        threshold = evaluation["threshold"]
+            if (
+                not isinstance(evaluation["rubric"], str)
+                or not evaluation["rubric"].strip()
+            ):
+                raise ValueError(
+                    f"Rubric must be a non-empty string in {test_id}."
+                )
 
-        if (
-            isinstance(threshold, bool)
-            or not isinstance(threshold, (int, float))
-            or not 0 <= threshold <= 1
-        ):
-            raise ValueError(
-                f"Invalid threshold in {test_id}. Expected a number between 0 and 1."
-            )
+            threshold = evaluation["threshold"]
+
+            if (
+                isinstance(threshold, bool)
+                or not isinstance(threshold, (int, float))
+                or not 0 <= threshold <= 1
+            ):
+                raise ValueError(
+                    f"Invalid threshold in {test_id}. "
+                    "Expected a number between 0 and 1."
+                )
 
         if (
             not isinstance(test_case["tags"], list)
-            or not all(isinstance(tag, str) for tag in test_case["tags"])
+            or not all(
+                isinstance(tag, str)
+                for tag in test_case["tags"]
+            )
         ):
             raise ValueError(
                 f"Tags must be a list of strings in {test_id}."

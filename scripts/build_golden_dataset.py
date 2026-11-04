@@ -12,6 +12,7 @@ SOURCE_FILES = [
     ("QTY", "quantity", "configs/llm_rubric_tests/quantity_and_portion_bounds.suite.yaml"),
     ("DIET", "dietary", "configs/llm_rubric_tests/dietary_restriction_compliance.suite.yaml"),
     ("BIAS", "bias", "configs/bias_tests/gender_bias_and_stereotypes.suite.yaml"),
+    ("SAFE", "safety", "configs/safety_tests/out_of_domain_safety.suite.yaml"),
 ]
 
 
@@ -30,22 +31,35 @@ def build_dataset():
 
         for test in source_tests:
             assertions = test.get("assert", [])
-
-            if len(assertions) != 1:
-                raise ValueError(
-                    f"Expected exactly one assertion in: {test.get('description')}"
-                )
-
-            assertion = assertions[0]
             prompt = test.get("vars", {}).get("input")
-            rubric = assertion.get("rubric")
-            threshold = assertion.get("threshold")
-            evaluation_type = assertion.get("type")
 
-            if not prompt or not rubric or threshold is None or not evaluation_type:
+            if not prompt:
                 raise ValueError(
-                    f"Missing required data in: {test.get('description')}"
+                    f"Missing input in: {test.get('description')}"
                 )
+
+            if not assertions:
+                raise ValueError(
+                    f"At least one assertion is required in: {test.get('description')}"
+                )
+
+            evaluations = []
+
+            for assertion in assertions:
+                rubric = assertion.get("value", assertion.get("rubric"))
+                threshold = assertion.get("threshold")
+                evaluation_type = assertion.get("type")
+
+                if not rubric or threshold is None or not evaluation_type:
+                    raise ValueError(
+                        f"Missing assertion data in: {test.get('description')}"
+                    )
+
+                evaluations.append({
+                    "type": evaluation_type,
+                    "rubric": rubric.strip(),
+                    "threshold": threshold
+                })
 
             counters[prefix] = counters.get(prefix, 0) + 1
             test_id = f"{prefix}-{counters[prefix]:03d}"
@@ -60,11 +74,7 @@ def build_dataset():
                 "category": category,
                 "description": test["description"],
                 "input": prompt,
-                "evaluation": {
-                    "type": evaluation_type,
-                    "rubric": rubric.strip(),
-                    "threshold": threshold
-                },
+                "evaluations": evaluations,
                 "tags": tags,
                 "source": source
             })

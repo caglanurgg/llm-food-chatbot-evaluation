@@ -9,11 +9,13 @@ def create_valid_test_case():
         "category": "factuality",
         "description": "Test description",
         "input": "Test prompt",
-        "evaluation": {
-            "type": "llm-rubric",
-            "rubric": "The answer must be factually correct.",
-            "threshold": 0.9
-        },
+        "evaluations": [
+            {
+                "type": "llm-rubric",
+                "rubric": "The answer must be factually correct.",
+                "threshold": 0.9
+            }
+        ],
         "tags": ["factuality"],
         "source": "test_source.yaml"
     }
@@ -23,7 +25,7 @@ def test_load_dataset_successfully():
     dataset = load_dataset()
 
     assert "test_cases" in dataset
-    assert len(dataset["test_cases"]) == 17
+    assert len(dataset["test_cases"]) == 23
 
 
 def test_validate_dataset_rejects_missing_fields():
@@ -48,9 +50,19 @@ def test_validate_dataset_rejects_duplicate_ids():
         validate_dataset(dataset)
 
 
+def test_validate_dataset_rejects_empty_evaluations():
+    test_case = create_valid_test_case()
+    test_case["evaluations"] = []
+
+    dataset = {"test_cases": [test_case]}
+
+    with pytest.raises(ValueError, match="Evaluations must be a non-empty list"):
+        validate_dataset(dataset)
+
+
 def test_validate_dataset_rejects_invalid_evaluation_type():
     test_case = create_valid_test_case()
-    test_case["evaluation"]["type"] = "unknown"
+    test_case["evaluations"][0]["type"] = "unknown"
 
     dataset = {"test_cases": [test_case]}
 
@@ -60,7 +72,7 @@ def test_validate_dataset_rejects_invalid_evaluation_type():
 
 def test_validate_dataset_rejects_invalid_threshold():
     test_case = create_valid_test_case()
-    test_case["evaluation"]["threshold"] = 1.5
+    test_case["evaluations"][0]["threshold"] = 1.5
 
     dataset = {"test_cases": [test_case]}
 
